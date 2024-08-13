@@ -1,4 +1,6 @@
-from django.core.validators import RegexValidator
+from datetime import datetime
+
+from django.core.validators import MaxValueValidator, RegexValidator
 from django.db import models
 
 
@@ -60,14 +62,20 @@ class Title(models.Model):
         verbose_name='Описание'
     )
     year = models.PositiveIntegerField(
-        verbose_name='Год выпуска'
+        verbose_name='Год выпуска',
+        validators=[
+            MaxValueValidator(
+                int(datetime.now().year),
+                message='Год выпуска не может быть больше текущего.'
+            )
+        ],
     )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
         related_name='titles',
         null=True,
-        verbose_name='Slug категории'
+        verbose_name='Категория'
     )
     genre = models.ManyToManyField(
         Genre,
@@ -98,6 +106,8 @@ class GenreTitle(models.Model):
     )
 
     class Meta:
+        verbose_name = 'Жанр произведения'
+        verbose_name_plural = 'жанры произведений'
         ordering = ('id', )
         constraints = [
             models.UniqueConstraint(
