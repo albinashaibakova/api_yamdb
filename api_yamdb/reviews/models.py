@@ -1,9 +1,6 @@
-from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
 from django.db import models
 
-
-User = get_user_model()
 
 NAME_FIELD_MAX_LENGTH = 256
 SLUG_FIELD_MAX_LENGTH = 50
