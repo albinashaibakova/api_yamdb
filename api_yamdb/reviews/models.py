@@ -1,9 +1,51 @@
+from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
 
 
 NAME_FIELD_MAX_LENGTH = 256
 SLUG_FIELD_MAX_LENGTH = 50
+USERNAME_FIELD_MAX_LENGTH = 150
+EMAIL_FIELD_MAX_LENGTH = 254
+FIRST_NAME_FIELD_MAX_LENGTH = 150
+LAST_NAME_FIELD_MAX_LENGTH = 150
+ROLE_MAX_LENGTH = 20
+
+
+ROLE_CHOICES = (
+    ('admin', 'admin'),
+    ('moderator', 'moderator'),
+    ('user', 'user')
+)
+
+
+class CustomUser(AbstractUser):
+    username = models.CharField(
+        max_length=USERNAME_FIELD_MAX_LENGTH,
+        unique=True,
+        blank=False,
+        validators=[
+            RegexValidator(regex=r'^[\w.@+-]+\Z')
+        ]
+    )
+    email = models.EmailField(
+        max_length=EMAIL_FIELD_MAX_LENGTH,
+        unique=True,
+        blank=False
+    )
+    first_name = models.CharField(
+        max_length=NAME_FIELD_MAX_LENGTH
+    )
+    last_name = models.CharField(
+        max_length=LAST_NAME_FIELD_MAX_LENGTH
+    )
+    bio = models.TextField(blank=True)
+    role = models.CharField(choices=ROLE_CHOICES,
+                            default='user',
+                            max_length=ROLE_MAX_LENGTH)
+
+    def __str__(self):
+        return self.username
 
 
 class Genre(models.Model):
