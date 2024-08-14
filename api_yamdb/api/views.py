@@ -1,7 +1,12 @@
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth import get_user_model
-from django.contrib.auth.tokens import default_token_generator
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import (
+    filters,
+    mixins,
+    permissions,
+    status,
+    viewsets
+)
 from django.shortcuts import get_object_or_404
 from rest_framework import (
     filters,
