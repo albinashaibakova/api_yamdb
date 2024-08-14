@@ -13,19 +13,19 @@ from .serializers import (CategorySerializer,
                           TitleListSerializer,
                           UserSignUpSerializer)
 
-CustomUser = get_user_model()
+User = get_user_model()
 
 
 class UserSignUpViewSet(mixins.CreateModelMixin,
                         viewsets.GenericViewSet):
-    queryset = CustomUser.objects.all()
+    queryset = User.objects.all()
     serializer_class = UserSignUpSerializer
     permission_classes = (permissions.AllowAny,)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        CustomUser.objects.create(**serializer.validated_data)
+        User.objects.create(**serializer.validated_data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
