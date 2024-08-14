@@ -49,7 +49,7 @@ class UserSignUpViewSet(mixins.CreateModelMixin,
 
 class UserGetTokenViewSet(mixins.CreateModelMixin,
                           viewsets.GenericViewSet):
-    queryset = CustomUser.objects.all()
+    queryset = User.objects.all()
     serializer_class = UserGetTokenSerializer
 
     def create(self, request):
@@ -57,7 +57,7 @@ class UserGetTokenViewSet(mixins.CreateModelMixin,
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data.get('username')
         confirmation_code = serializer.validated_data.get('confirmation_code')
-        user = get_object_or_404(CustomUser, username=username)
+        user = get_object_or_404(User, username=username)
         token = {'token': str(AccessToken.for_user(user))}
         return Response(token, status=status.HTTP_200_OK)
 
