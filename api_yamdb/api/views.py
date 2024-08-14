@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django_filters.rest_framework import DjangoFilterBackend
+from django.shortcuts import get_object_or_404
 from rest_framework import (
     filters,
     mixins,
@@ -8,9 +9,6 @@ from rest_framework import (
     status,
     viewsets
 )
-from django.shortcuts import get_object_or_404
-from rest_framework import (filters, mixins, permissions,
-                            status, viewsets)
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import AccessToken
@@ -19,12 +17,13 @@ from reviews.models import Category, Genre, Title
 from .filters import TitleFilter
 from .mixins import ListCreateDestroyViewSet
 from .permissions import IsAdminOrReadOnly
-from .serializers import (CategorySerializer,
-                          GenreSerializer,
-                          TitleSerializer,
-                          TitleListSerializer,
-                          UserGetTokenSerializer,
-                          UserSignUpSerializer)
+from .serializers import (
+    CategorySerializer,
+    GenreSerializer,
+    TitleSerializer,
+    TitleListSerializer,
+    UserSignUpSerializer
+)
 from .utils import send_confirmation_email
 
 User = get_user_model()
