@@ -1,6 +1,12 @@
 from rest_framework import serializers
 
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, CustomUser, Genre, Title
+
+
+class UserSignUpSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email')
 
 
 class CategorySerializer(serializers.ModelSerializer):
