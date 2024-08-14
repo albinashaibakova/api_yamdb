@@ -16,8 +16,7 @@ v1_router.register('titles', TitleViewSet, basename='titles')
 auth_urls = [
     path('signup/', UserSignUpViewSet.as_view({'post': 'create'}),
          name='signup'),
-    path('token/', UserGetTokenViewSet.as_view({'post': 'create'}),
-         name='token')
+    path('token/', UserGetTokenViewSet.as_view({'post': 'create'}), name='token')
 ]
 
 urlpatterns = [
