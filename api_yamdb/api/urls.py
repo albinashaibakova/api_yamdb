@@ -16,6 +16,7 @@ auth_urls = [
     path('signup/', UserSignUpViewSet.as_view({'post': 'create'}),
          name='signup'),
 ]
+
 urlpatterns = [
     path('v1/', include(v1_router.urls)),
     path('v1/auth/', include(auth_urls))
