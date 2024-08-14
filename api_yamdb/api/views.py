@@ -13,7 +13,6 @@ from .serializers import (CategorySerializer,
                           TitleListSerializer,
                           UserSignUpSerializer)
 
-
 CustomUser = get_user_model()
 
 
