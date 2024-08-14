@@ -1,11 +1,77 @@
 from datetime import datetime
 
 from django.core.validators import MaxValueValidator, RegexValidator
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
 NAME_FIELD_MAX_LENGTH = 256
 SLUG_FIELD_MAX_LENGTH = 50
+USERNAME_FIELD_MAX_LENGTH = 150
+EMAIL_FIELD_MAX_LENGTH = 254
+FIRST_NAME_FIELD_MAX_LENGTH = 150
+LAST_NAME_FIELD_MAX_LENGTH = 150
+ROLE_MAX_LENGTH = 20
+
+USER = 'user'
+MODERATOR = 'moderator'
+ADMIN = 'admin'
+
+ROLE_CHOICES = (
+    (ADMIN, ADMIN),
+    (MODERATOR, MODERATOR),
+    (USER, USER)
+)
+
+
+class CustomUser(AbstractUser):
+    username = models.CharField(
+        max_length=USERNAME_FIELD_MAX_LENGTH,
+        unique=True,
+        blank=False,
+        validators=[
+            RegexValidator(regex=r'^[\w.@+-]+\Z')
+        ]
+    )
+    email = models.EmailField(
+        max_length=EMAIL_FIELD_MAX_LENGTH,
+        unique=True,
+        blank=False
+    )
+    first_name = models.CharField(
+        max_length=NAME_FIELD_MAX_LENGTH,
+        blank=True
+    )
+    last_name = models.CharField(
+        max_length=LAST_NAME_FIELD_MAX_LENGTH,
+        blank=True
+    )
+    bio = models.TextField(blank=True,
+                           verbose_name="Bio")
+    role = models.CharField(choices=ROLE_CHOICES,
+                            default='user',
+                            max_length=ROLE_MAX_LENGTH,
+                            verbose_name="Role")
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+        ordering = ('id',)
+
+    def __str__(self):
+        return self.username
+
+    @property
+    def is_moderator(self):
+        return self.role == MODERATOR
+
+    @property
+    def is_admin(self):
+        return self.role == ADMIN
+
+    @property
+    def is_user(self):
+        return self.role == USER
 
 
 class Genre(models.Model):
