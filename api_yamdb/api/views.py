@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django_filters.rest_framework import DjangoFilterBackend
+from django.shortcuts import get_object_or_404
 from rest_framework import (
     filters,
     mixins,
@@ -8,7 +9,6 @@ from rest_framework import (
     status,
     viewsets
 )
-from django.shortcuts import get_object_or_404
 from rest_framework import (filters, mixins, permissions,
                             status, viewsets)
 from rest_framework.response import Response
@@ -39,7 +39,7 @@ class UserSignUpViewSet(mixins.CreateModelMixin,
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        CustomUser.objects.create(**serializer.validated_data)
+        User.objects.create(**serializer.validated_data)
         user = User.objects.get(username=serializer.validated_data['username'])
         confirmation_code = default_token_generator.make_token(user)
         send_confirmation_email(email=user.email,
