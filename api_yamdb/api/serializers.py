@@ -1,11 +1,14 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from reviews.models import Category, CustomUser, Genre, Title
+from reviews.models import Category, Genre, Title
+
+User = get_user_model()
 
 
 class UserSignUpSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomUser
+        model = User
         fields = ('username', 'email')
 
 

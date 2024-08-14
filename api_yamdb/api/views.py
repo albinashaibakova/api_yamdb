@@ -19,13 +19,12 @@ from .serializers import (CategorySerializer,
                           UserSignUpSerializer)
 from .utils import send_confirmation_email
 
-
 User = get_user_model()
 
 
 class UserSignUpViewSet(mixins.CreateModelMixin,
                         viewsets.GenericViewSet):
-    queryset = CustomUser.objects.all()
+    queryset = User.objects.all()
     serializer_class = UserSignUpSerializer
     permission_classes = (permissions.AllowAny,)
 
