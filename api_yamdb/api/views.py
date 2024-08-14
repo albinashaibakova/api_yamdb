@@ -1,9 +1,10 @@
+from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import (filters, mixins, permissions,
                             status, viewsets)
 from rest_framework.response import Response
 
-from reviews.models import Category, CustomUser, Genre, Title
+from reviews.models import Category, Genre, Title
 from .filters import TitleFilter
 from .mixins import ListCreateDestroyViewSet
 from .serializers import (CategorySerializer,
@@ -13,10 +14,14 @@ from .serializers import (CategorySerializer,
                           UserSignUpSerializer)
 
 
+CustomUser = get_user_model()
+
+
 class UserSignUpViewSet(mixins.CreateModelMixin,
                         viewsets.GenericViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = UserSignUpSerializer
+    permission_classes = (permissions.AllowAny,)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
