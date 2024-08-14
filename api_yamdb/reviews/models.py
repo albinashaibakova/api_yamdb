@@ -2,7 +2,6 @@ from datetime import datetime
 
 from django.core.validators import MaxValueValidator, RegexValidator
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
 from django.db import models
 
 
