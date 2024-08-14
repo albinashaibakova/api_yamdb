@@ -50,6 +50,7 @@ class UserGetTokenViewSet(mixins.CreateModelMixin,
                           viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserGetTokenSerializer
+    permission_classes = (permissions.AllowAny,)
 
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -57,8 +58,15 @@ class UserGetTokenViewSet(mixins.CreateModelMixin,
         username = serializer.validated_data.get('username')
         confirmation_code = serializer.validated_data.get('confirmation_code')
         user = get_object_or_404(User, username=username)
-        token = {'token': str(AccessToken.for_user(user))}
-        return Response(token, status=status.HTTP_200_OK)
+        if default_token_generator.check_token(user, confirmation_code):
+            success_message = {
+                'Registration completed. Your token:': str(AccessToken.for_user(user))
+            }
+            return Response(success_message, status=status.HTTP_200_OK)
+        else:
+            bad_request_message = {'confirmation_code': 'Confirmation code invalid'}
+            return Response(bad_request_message,
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class CategoryViewSet(ListCreateDestroyViewSet):
