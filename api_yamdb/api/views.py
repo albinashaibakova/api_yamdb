@@ -1,17 +1,25 @@
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import (filters, mixins, permissions,
-                            status, viewsets)
+from rest_framework import (
+    filters,
+    mixins,
+    permissions,
+    status,
+    viewsets
+)
 from rest_framework.response import Response
 
 from reviews.models import Category, Genre, Title
 from .filters import TitleFilter
 from .mixins import ListCreateDestroyViewSet
-from .serializers import (CategorySerializer,
-                          GenreSerializer,
-                          TitleSerializer,
-                          TitleListSerializer,
-                          UserSignUpSerializer)
+from .permissions import IsAdminOrReadOnly
+from .serializers import (
+    CategorySerializer,
+    GenreSerializer,
+    TitleSerializer,
+    TitleListSerializer,
+    UserSignUpSerializer
+)
 
 User = get_user_model()
 
@@ -35,7 +43,7 @@ class CategoryViewSet(ListCreateDestroyViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class GenreViewSet(ListCreateDestroyViewSet):
@@ -44,14 +52,14 @@ class GenreViewSet(ListCreateDestroyViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (IsAdminOrReadOnly,)
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
