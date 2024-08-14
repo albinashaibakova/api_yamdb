@@ -9,14 +9,7 @@ from rest_framework import (
     status,
     viewsets
 )
-from django.shortcuts import get_object_or_404
-from rest_framework import (
-    filters,
-    mixins,
-    permissions,
-    status,
-    viewsets
-)
+
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import AccessToken
