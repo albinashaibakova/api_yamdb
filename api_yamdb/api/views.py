@@ -12,7 +12,6 @@ from rest_framework import (
 from rest_framework import (filters, mixins, permissions,
                             status, viewsets)
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import AccessToken
 
 from reviews.models import Category, Genre, Title
@@ -51,6 +50,7 @@ class UserGetTokenViewSet(mixins.CreateModelMixin,
                           viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserGetTokenSerializer
+    permission_classes = (permissions.AllowAny, )
 
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -58,8 +58,13 @@ class UserGetTokenViewSet(mixins.CreateModelMixin,
         username = serializer.validated_data.get('username')
         confirmation_code = serializer.validated_data.get('confirmation_code')
         user = get_object_or_404(User, username=username)
-        token = {'token': str(AccessToken.for_user(user))}
-        return Response(token, status=status.HTTP_200_OK)
+        if default_token_generator.check_token(user, confirmation_code):
+            token = AccessToken.for_user(user)
+            success_message = {'Your token is': str(token)}
+            return Response(success_message, status=status.HTTP_200_OK)
+        else:
+            bad_request_message = {'confirmation_code': 'Your code is invalid'}
+            return Response(bad_request_message, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CategoryViewSet(ListCreateDestroyViewSet):

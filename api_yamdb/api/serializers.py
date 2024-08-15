@@ -5,6 +5,8 @@ from reviews.models import Category, Genre, Title
 
 User = get_user_model()
 
+USERNAME_FIELD_MAX_LENGTH = 150
+
 
 class UserSignUpSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,8 +15,10 @@ class UserSignUpSerializer(serializers.ModelSerializer):
 
 
 class UserGetTokenSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=150,
-                                     required=True)
+    username = serializers.RegexField(
+        regex=r'^[\w.@+-]+\Z',
+        max_length=USERNAME_FIELD_MAX_LENGTH,
+        required=True)
     confirmation_code = serializers.CharField(required=True)
 
 
