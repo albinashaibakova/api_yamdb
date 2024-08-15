@@ -7,6 +7,31 @@ User = get_user_model()
 
 USERNAME_FIELD_MAX_LENGTH = 150
 EMAIL_FIELD_MAX_LENGTH = 254
+FIRST_NAME_FIELD_MAX_LENGTH = 150
+LAST_NAME_FIELD_MAX_LENGTH = 150
+
+
+class UserSerializer(serializers.ModelSerializer):
+    username = serializers.RegexField(
+        regex=r'^[\w.@+-]+\Z',
+        max_length=USERNAME_FIELD_MAX_LENGTH,
+        required=True)
+    email = serializers.EmailField(
+        max_length=EMAIL_FIELD_MAX_LENGTH,
+        required=True)
+    first_name = serializers.CharField(
+        max_length=FIRST_NAME_FIELD_MAX_LENGTH,
+        required=False
+    )
+    last_name = serializers.CharField(
+        max_length=LAST_NAME_FIELD_MAX_LENGTH,
+        required=False
+    )
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'bio', 'role')
 
 
 class UserSignUpSerializer(serializers.ModelSerializer):
