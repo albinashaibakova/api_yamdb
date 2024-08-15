@@ -60,7 +60,7 @@ class UserGetTokenViewSet(mixins.CreateModelMixin,
         user = get_object_or_404(User, username=username)
         if default_token_generator.check_token(user, confirmation_code):
             token = AccessToken.for_user(user)
-            success_message = {'Your token is': str(token)}
+            success_message = {'Your token is': token}
             return Response(success_message, status=status.HTTP_200_OK)
         else:
             bad_request_message = {'confirmation_code': 'Your code is invalid'}
