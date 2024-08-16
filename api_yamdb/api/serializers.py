@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 from reviews.models import Category, Genre, Title
 
@@ -15,10 +16,12 @@ class UserSerializer(serializers.ModelSerializer):
     username = serializers.RegexField(
         regex=r'^[\w.@+-]+\Z',
         max_length=USERNAME_FIELD_MAX_LENGTH,
-        required=True)
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())])
     email = serializers.EmailField(
         max_length=EMAIL_FIELD_MAX_LENGTH,
-        required=True)
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())])
     first_name = serializers.CharField(
         max_length=FIRST_NAME_FIELD_MAX_LENGTH,
         required=False
