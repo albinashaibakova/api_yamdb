@@ -1,15 +1,69 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 from reviews.models import Category, Comment, Genre, Title, Review
 
 User = get_user_model()
 
 USERNAME_FIELD_MAX_LENGTH = 150
+EMAIL_FIELD_MAX_LENGTH = 254
+FIRST_NAME_FIELD_MAX_LENGTH = 150
+LAST_NAME_FIELD_MAX_LENGTH = 150
+
+
+class UserSerializer(serializers.ModelSerializer):
+    username = serializers.RegexField(
+        regex=r'^[\w.@+-]+\Z',
+        max_length=USERNAME_FIELD_MAX_LENGTH,
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())])
+    email = serializers.EmailField(
+        max_length=EMAIL_FIELD_MAX_LENGTH,
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())])
+    first_name = serializers.CharField(
+        max_length=FIRST_NAME_FIELD_MAX_LENGTH,
+        required=False
+    )
+    last_name = serializers.CharField(
+        max_length=LAST_NAME_FIELD_MAX_LENGTH,
+        required=False
+    )
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'bio', 'role')
 
 
 class UserSignUpSerializer(serializers.ModelSerializer):
+    username = serializers.RegexField(
+        regex=r'^[\w.@+-]+\Z',
+        max_length=USERNAME_FIELD_MAX_LENGTH,
+        required=True)
+    email = serializers.EmailField(
+        max_length=EMAIL_FIELD_MAX_LENGTH,
+        required=True)
+
+    def validate(self, data):
+        username = data.get('username')
+        email = data.get('email')
+        if username == 'me':
+            raise serializers.ValidationError(
+                'Cannot use username me'
+            )
+        if User.objects.filter(username=username).exists():
+            raise serializers.ValidationError(
+                'Username is already taken'
+            )
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError(
+                'Email is already registered'
+            )
+        return data
+
     class Meta:
         model = User
         fields = ('username', 'email')
