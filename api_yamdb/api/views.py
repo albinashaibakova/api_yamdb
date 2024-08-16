@@ -4,6 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from rest_framework import (filters, mixins, permissions,
                             status, viewsets)
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
@@ -78,7 +79,27 @@ class UsersViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrSuperuser, )
     lookup_field = 'username'
     search_fields = ('username',)
+    http_method_names = ('get', 'post', 'patch', 'delete',
+                         'head', 'options')
     filter_backends = (filters.SearchFilter,)
+
+    @action(methods=('get', 'patch'),
+            url_path='me',
+            permission_classes=(permissions.IsAuthenticated, ),
+            detail=False)
+    def get_user_profile(self, request):
+        if request.method == 'GET':
+            user = get_object_or_404(User, username=request.user.username)
+            serializer = UserSerializer(user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        if request.method == 'PATCH':
+            serializer = UserSerializer(request.user,
+                                        data=request.data,
+                                        partial=True)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save(role=request.user.role)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CategoryViewSet(ListCreateDestroyViewSet):
