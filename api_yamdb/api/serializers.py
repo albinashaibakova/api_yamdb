@@ -6,9 +6,35 @@ from reviews.models import Category, Genre, Title
 User = get_user_model()
 
 USERNAME_FIELD_MAX_LENGTH = 150
+EMAIL_FIELD_MAX_LENGTH = 254
 
 
 class UserSignUpSerializer(serializers.ModelSerializer):
+    username = serializers.RegexField(
+        regex=r'^[\w.@+-]+\Z',
+        max_length=USERNAME_FIELD_MAX_LENGTH,
+        required=True)
+    email = serializers.EmailField(
+        max_length=EMAIL_FIELD_MAX_LENGTH,
+        required=True)
+
+    def validate(self, data):
+        username = data.get('username')
+        email = data.get('email')
+        if username == 'me':
+            raise serializers.ValidationError(
+                'Cannot use username me'
+            )
+        if User.objects.filter(username=username).exists():
+            raise serializers.ValidationError(
+                'Username is already taken'
+            )
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError(
+                'Email is already registered'
+            )
+        return data
+
     class Meta:
         model = User
         fields = ('username', 'email')

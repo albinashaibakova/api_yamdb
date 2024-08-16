@@ -29,14 +29,23 @@ class UserSignUpViewSet(mixins.CreateModelMixin,
     permission_classes = (permissions.AllowAny,)
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        User.objects.create(**serializer.validated_data)
-        user = User.objects.get(username=serializer.validated_data['username'])
+
+        serializer = UserSignUpSerializer(data=request.data)
+        if User.objects.filter(
+                email=request.data.get('email'),
+                username=request.data.get('username')).exists():
+            user = get_object_or_404(User, email=request.data.get('email'))
+            response_data = request.data
+        else:
+            serializer.is_valid(raise_exception=True)
+            user = User.objects.create_user(**serializer.validated_data)
+            response_data = serializer.data
+
         confirmation_code = default_token_generator.make_token(user)
         send_confirmation_email(email=user.email,
                                 confirmation_code=confirmation_code)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 class UserGetTokenViewSet(mixins.CreateModelMixin,
