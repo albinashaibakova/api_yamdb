@@ -10,12 +10,14 @@ from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Genre, Title
 from .filters import TitleFilter
 from .mixins import ListCreateDestroyViewSet
-from .permissions import IsAdminOrReadOnly
+from .permissions import (IsAdminOrReadOnly,
+                          IsAdminOrSuperuser)
 from .serializers import (CategorySerializer,
                           GenreSerializer,
                           TitleSerializer,
                           TitleListSerializer,
                           UserGetTokenSerializer,
+                          UserSerializer,
                           UserSignUpSerializer)
 from .utils import send_confirmation_email
 
@@ -68,6 +70,15 @@ class UserGetTokenViewSet(mixins.CreateModelMixin,
             bad_request_message = {'Error': 'Отсутствует'
                                             ' обязательное поле или оно некорректно'}
             return Response(bad_request_message, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UsersViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (IsAdminOrSuperuser, )
+    lookup_field = 'username'
+    search_fields = ('username',)
+    filter_backends = (filters.SearchFilter,)
 
 
 class CategoryViewSet(ListCreateDestroyViewSet):
