@@ -1,8 +1,13 @@
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from reviews.models import Category, Genre, Title
+from reviews.models import (Category,
+                            Comment,
+                            Genre,
+                            Review,
+                            Title)
 
 User = get_user_model()
 
@@ -109,3 +114,43 @@ class TitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
         fields = ('id', 'name', 'year', 'description', 'category', 'genre',)
+
+
+class AuthorSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username',
+        default=serializers.CurrentUserDefault()
+    )
+
+
+class ReviewSerializer(AuthorSerializer):
+
+    class Meta:
+        model = Review
+        fields = ('id', 'author', 'title', 'text', 'pub_date', 'score',)
+        read_only_fields = ('author', 'pub_date', 'title',)
+
+    def validate(self, data):
+        if self.context['request'].method != 'POST':
+            return data
+
+        if Review.objects.filter(
+            author=self.context['request'].user,
+            title=get_object_or_404(
+                Title,
+                id=self.context['view'].kwargs.get('title_id'))
+        ).exists():
+            raise serializers.ValidationError(
+                'Можно добавить только один '
+                'отзыв на произведение'
+            )
+        return data
+
+
+class CommentSerializer(AuthorSerializer):
+
+    class Meta:
+        fields = ('id', 'author', 'review', 'text', 'pub_date',)
+        model = Comment
+        read_only_fields = ('author', 'pub_date', 'review', )
