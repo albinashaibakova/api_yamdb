@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
@@ -103,7 +104,10 @@ class TitleListSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'year', 'description', 'category', 'genre', 'rating')
 
     def get_rating(self, obj):
-        #todo
+        title_reviews = obj.reviews.all()
+        if title_reviews:
+            return title_reviews.aggregate(Avg('score'))['score__avg']
+
         return None
 
 
@@ -125,7 +129,6 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(AuthorSerializer):
-
     class Meta:
         model = Review
         fields = ('id', 'author', 'title', 'text', 'pub_date', 'score',)
@@ -136,10 +139,10 @@ class ReviewSerializer(AuthorSerializer):
             return data
 
         if Review.objects.filter(
-            author=self.context['request'].user,
-            title=get_object_or_404(
-                Title,
-                id=self.context['view'].kwargs.get('title_id'))
+                author=self.context['request'].user,
+                title=get_object_or_404(
+                    Title,
+                    id=self.context['view'].kwargs.get('title_id'))
         ).exists():
             raise serializers.ValidationError(
                 'Можно добавить только один '
@@ -149,8 +152,7 @@ class ReviewSerializer(AuthorSerializer):
 
 
 class CommentSerializer(AuthorSerializer):
-
     class Meta:
         fields = ('id', 'author', 'review', 'text', 'pub_date',)
         model = Comment
-        read_only_fields = ('author', 'pub_date', 'review', )
+        read_only_fields = ('author', 'pub_date', 'review',)
