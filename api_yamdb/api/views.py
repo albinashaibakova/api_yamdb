@@ -17,7 +17,9 @@ from .serializers import (CategorySerializer,
                           TitleSerializer,
                           TitleListSerializer,
                           UserGetTokenSerializer,
-                          UserSignUpSerializer)
+                          UserSignUpSerializer,
+                          ReviewSerializer,
+                          CommentSerializer)
 from .utils import send_confirmation_email
 
 User = get_user_model()
@@ -133,7 +135,6 @@ class TitleViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
 
     serializer_class = ReviewSerializer
-    agination_class = pagination.PageNumberPagination
     title_id_kwarg = 'title_id'
     http_method_names = ['get', 'post', 'patch', 'delete']
 
@@ -159,7 +160,6 @@ class CommentsViewSet(viewsets.ModelViewSet):
 
     serializer_class = CommentSerializer
     review_id_kwarg = 'review_id'
-    pagination_class = pagination.PageNumberPagination
 
     def get_review(self):
         return get_object_or_404(

@@ -210,7 +210,6 @@ class Review(BaseCommentReview):
     )
     score = models.IntegerField(
         verbose_name='Оценка',
-        default=1,
         validators=(
             MinValueValidator(
                 1, message=('Оценка должна быть 1 или больше.')
@@ -230,7 +229,7 @@ class Review(BaseCommentReview):
                 name='unique_author_title'
             )
         ]
-        ordering = ('-pub_date', 'author')
+        ordering = ('-pub_date',)
 
 
 class Comment(BaseCommentReview):
