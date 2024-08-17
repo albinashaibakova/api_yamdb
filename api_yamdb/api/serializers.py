@@ -129,7 +129,7 @@ class ReviewSerializer(AuthorSerializer):
     class Meta:
         model = Review
         fields = ('id', 'author', 'title', 'text', 'pub_date', 'score',)
-        read_only_fields = ('title',)
+        read_only_fields = ('author', 'pub_date', 'title',)
 
     def validate(self, data):
         if self.context['request'].method != 'POST':
@@ -153,4 +153,4 @@ class CommentSerializer(AuthorSerializer):
     class Meta:
         fields = ('id', 'author', 'review', 'text', 'pub_date',)
         model = Comment
-        read_only_fields = ('review',)
+        read_only_fields = ('author', 'pub_date', 'review', )
