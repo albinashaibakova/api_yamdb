@@ -1,6 +1,8 @@
 # Авторы
 https://github.com/albinashaibakova
 https://github.com/matissiyaEdu
+https://github.com/DenisLyane
+
 
 # Проект YaMDb
 Проект YaMDb собирает отзывы пользователей на произведения. Сами произведения в YaMDb не хранятся, здесь нельзя посмотреть фильм или послушать музыку.

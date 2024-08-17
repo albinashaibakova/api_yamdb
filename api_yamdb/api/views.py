@@ -150,10 +150,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.get_title().reviews.all()
 
-    @property
-    def allowed_methods(self):
-        methods = super().allowed_methods
-        return [method for method in methods if method != 'PUT']
 
     def perform_create(self, serializer):
         serializer.save(
@@ -178,10 +174,6 @@ class CommentsViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.get_review().comments.select_related('author')
 
-    @property
-    def allowed_methods(self):
-        methods = super().allowed_methods
-        return [method for method in methods if method != 'PUT']
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user, review=self.get_review())
