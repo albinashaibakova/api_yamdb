@@ -14,8 +14,9 @@ ALLOWED_FILES_DICT = (
     ('titles', Title),
     ('genre_title', GenreTitle),
     ('users', User),
-    ('review', Review),
-    ('comments', Comment),
+    #todo
+    # ('review', Review),
+    # ('comments', Comment),
 )
 
 COLUMN_FOREIGN_MODEL = {
@@ -23,7 +24,7 @@ COLUMN_FOREIGN_MODEL = {
     'title_id': Title,
     'genre_id': Genre,
     'author': User,
-    'review_id': Review,
+    # 'review_id': Review,
 }
 
 
