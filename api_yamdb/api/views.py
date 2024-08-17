@@ -7,7 +7,7 @@ from rest_framework import (filters, mixins, permissions,
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
-from reviews.models import Category, Genre, Title, Review, Comment
+from reviews.models import Category, Genre, Title, Review
 from .filters import TitleFilter
 from .mixins import ListCreateDestroyViewSet
 from .permissions import (IsAdminOrReadOnly,
@@ -137,6 +137,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
 
     serializer_class = ReviewSerializer
+    permission_classes = (IsAuthorAdminModeratorOrReadOnly, )
     title_id_kwarg = 'title_id'
     http_method_names = ['get', 'post', 'patch', 'delete']
 
@@ -161,6 +162,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class CommentsViewSet(viewsets.ModelViewSet):
 
     serializer_class = CommentSerializer
+    permission_classes = (IsAuthorAdminModeratorOrReadOnly, )
     review_id_kwarg = 'review_id'
 
     def get_review(self):
