@@ -1,9 +1,8 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from reviews.models import Category, Comment, Genre, Title, Review
+from reviews.models import Category, Genre, Title
 
 User = get_user_model()
 
@@ -96,20 +95,17 @@ class TitleListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ('id', 'name', 'year', 'description',
-                  'category', 'genre', 'rating')
+        fields = ('id', 'name', 'year', 'description', 'category', 'genre', 'rating')
 
     def get_rating(self, obj):
-        # todo
+        #todo
         return None
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    category = serializers.SlugRelatedField(
-        slug_field='slug', queryset=Category.objects.all())
-    genre = serializers.SlugRelatedField(
-        slug_field='slug', many=True, queryset=Genre.objects.all())
+    category = serializers.SlugRelatedField(slug_field='slug', queryset=Category.objects.all())
+    genre = serializers.SlugRelatedField(slug_field='slug', many=True, queryset=Genre.objects.all())
 
     class Meta:
         model = Title
-        fields = ('name', 'year', 'description', 'category', 'genre',)
+        fields = ('id', 'name', 'year', 'description', 'category', 'genre',)
