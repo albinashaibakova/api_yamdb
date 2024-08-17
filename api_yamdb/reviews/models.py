@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from django.core.validators import MaxValueValidator, RegexValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -181,3 +181,73 @@ class GenreTitle(models.Model):
                 name='genre_title_unique'
             )
         ]
+
+
+class BaseCommentReview(models.Model):
+    text = models.TextField(verbose_name='Текст')
+    pub_date = models.DateTimeField(
+        verbose_name='Дата публикации',
+        auto_now_add=True
+    )
+
+    class Meta:
+        abstract = True
+
+
+class Review(BaseCommentReview):
+
+    author = models.ForeignKey(
+        CustomUser,
+        verbose_name='Автор',
+        on_delete=models.CASCADE,
+        related_name='reviews'
+    )
+    title = models.ForeignKey(
+        Title,
+        verbose_name='Произведение',
+        on_delete=models.CASCADE,
+        related_name='reviews'
+    )
+    score = models.IntegerField(
+        verbose_name='Оценка',
+        validators=(
+            MinValueValidator(
+                1, message=('Оценка должна быть 1 или больше.')
+            ),
+            MaxValueValidator(
+                10, message=('Оценка не может быть больше 10.')
+            )
+        )
+    )
+
+    class Meta:
+        verbose_name = 'отзыв'
+        verbose_name_plural = 'Отзывы'
+        constraints = [
+            models.UniqueConstraint(
+                fields=('author', 'title'),
+                name='unique_author_title'
+            )
+        ]
+        ordering = ('-pub_date',)
+
+
+class Comment(BaseCommentReview):
+
+    author = models.ForeignKey(
+        CustomUser,
+        verbose_name='Автор',
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
+    review = models.ForeignKey(
+        Review,
+        verbose_name='Отзыв',
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
+
+    class Meta:
+        verbose_name = 'комментарий'
+        verbose_name_plural = 'Комментарии'
+        ordering = ('-pub_date',)
