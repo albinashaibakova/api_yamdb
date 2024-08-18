@@ -113,11 +113,14 @@ class TitleListSerializer(serializers.ModelSerializer):
 
 class TitleSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(slug_field='slug', queryset=Category.objects.all())
-    genre = serializers.SlugRelatedField(slug_field='slug', many=True, queryset=Genre.objects.all())
+    genre = serializers.SlugRelatedField(slug_field='slug', many=True, allow_empty=False, queryset=Genre.objects.all())
 
     class Meta:
         model = Title
         fields = ('id', 'name', 'year', 'description', 'category', 'genre',)
+
+    def to_representation(self, instance):
+        return TitleListSerializer(instance).data
 
 
 class AuthorSerializer(serializers.ModelSerializer):

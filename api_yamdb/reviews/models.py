@@ -126,7 +126,7 @@ class Title(models.Model):
         verbose_name='Hазвание',
     )
     description = models.TextField(
-        null=True,
+        blank=True,
         verbose_name='Описание'
     )
     year = models.PositiveIntegerField(
