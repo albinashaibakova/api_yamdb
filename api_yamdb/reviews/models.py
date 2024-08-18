@@ -214,10 +214,10 @@ class Review(BaseCommentReview):
         verbose_name='Оценка',
         validators=(
             MinValueValidator(
-                1, message=('Оценка должна быть 1 или больше.')
+                1, message='Оценка должна быть 1 или больше.'
             ),
             MaxValueValidator(
-                10, message=('Оценка не может быть больше 10.')
+                10, message='Оценка не может быть больше 10.'
             )
         )
     )
