@@ -5,34 +5,34 @@ from django.core.validators import (MaxValueValidator,
                                     RegexValidator)
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
-
-NAME_FIELD_MAX_LENGTH = 256
-SLUG_FIELD_MAX_LENGTH = 50
-USERNAME_FIELD_MAX_LENGTH = 150
-EMAIL_FIELD_MAX_LENGTH = 254
-FIRST_NAME_FIELD_MAX_LENGTH = 150
-LAST_NAME_FIELD_MAX_LENGTH = 150
-ROLE_MAX_LENGTH = 20
-
-USER = 'user'
-MODERATOR = 'moderator'
-ADMIN = 'admin'
-
-ROLE_CHOICES = (
-    (ADMIN, ADMIN),
-    (MODERATOR, MODERATOR),
-    (USER, USER)
-)
+from api_yamdb.settings import (EMAIL_FIELD_MAX_LENGTH,
+                                INVALID_CHAR,
+                                FIRST_NAME_FIELD_MAX_LENGTH,
+                                LAST_NAME_FIELD_MAX_LENGTH,
+                                NAME_FIELD_MAX_LENGTH,
+                                ROLE_MAX_LENGTH,
+                                SLUG_FIELD_MAX_LENGTH,
+                                USERNAME_FIELD_MAX_LENGTH,
+                                )
 
 
 class CustomUser(AbstractUser):
+    USER = 'user'
+    MODERATOR = 'moderator'
+    ADMIN = 'admin'
+
+    ROLE_CHOICES = (
+        (ADMIN, ADMIN),
+        (MODERATOR, MODERATOR),
+        (USER, USER)
+    )
+
     username = models.CharField(
         max_length=USERNAME_FIELD_MAX_LENGTH,
         unique=True,
         blank=False,
         validators=[
-            RegexValidator(regex=r'^[\w.@+-]+\Z')
+            RegexValidator(regex=INVALID_CHAR)
         ]
     )
     email = models.EmailField(
@@ -49,11 +49,11 @@ class CustomUser(AbstractUser):
         blank=True
     )
     bio = models.TextField(blank=True,
-                           verbose_name="Bio")
+                           verbose_name='Bio')
     role = models.CharField(choices=ROLE_CHOICES,
                             default='user',
                             max_length=ROLE_MAX_LENGTH,
-                            verbose_name="Role")
+                            verbose_name='Role')
 
     class Meta:
         verbose_name = 'Пользователь'
@@ -65,15 +65,15 @@ class CustomUser(AbstractUser):
 
     @property
     def is_moderator(self):
-        return self.role == MODERATOR
+        return self.role == self.MODERATOR
 
     @property
     def is_admin(self):
-        return self.role == ADMIN
+        return self.role == self.ADMIN
 
     @property
     def is_user(self):
-        return self.role == USER
+        return self.role == self.USER
 
 
 class Genre(models.Model):
@@ -85,7 +85,7 @@ class Genre(models.Model):
         max_length=SLUG_FIELD_MAX_LENGTH,
         unique=True,
         validators=[
-            RegexValidator(regex=r'^[-a-zA-Z0-9_]+$')
+            RegexValidator(regex=INVALID_CHAR)
         ]
     )
 
@@ -107,7 +107,7 @@ class Category(models.Model):
         max_length=SLUG_FIELD_MAX_LENGTH,
         unique=True,
         validators=[
-            RegexValidator(regex=r'^[-a-zA-Z0-9_]+$')
+            RegexValidator(regex=INVALID_CHAR)
         ]
     )
 
@@ -176,10 +176,10 @@ class GenreTitle(models.Model):
     class Meta:
         verbose_name = 'Жанр произведения'
         verbose_name_plural = 'жанры произведений'
-        ordering = ('id', )
+        ordering = ('id',)
         constraints = [
             models.UniqueConstraint(
-                fields=['title_id', 'genre_id'],
+                fields=('title_id', 'genre_id'),
                 name='genre_title_unique'
             )
         ]

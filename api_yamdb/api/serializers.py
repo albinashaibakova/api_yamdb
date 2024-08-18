@@ -4,6 +4,12 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
+from api_yamdb.settings import (EMAIL_FIELD_MAX_LENGTH,
+                                INVALID_CHAR,
+                                FIRST_NAME_FIELD_MAX_LENGTH,
+                                LAST_NAME_FIELD_MAX_LENGTH,
+                                USERNAME_FIELD_MAX_LENGTH,
+                                )
 from reviews.models import (Category,
                             Comment,
                             Genre,
@@ -12,15 +18,10 @@ from reviews.models import (Category,
 
 User = get_user_model()
 
-USERNAME_FIELD_MAX_LENGTH = 150
-EMAIL_FIELD_MAX_LENGTH = 254
-FIRST_NAME_FIELD_MAX_LENGTH = 150
-LAST_NAME_FIELD_MAX_LENGTH = 150
-
 
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.RegexField(
-        regex=r'^[\w.@+-]+\Z',
+        regex=INVALID_CHAR,
         max_length=USERNAME_FIELD_MAX_LENGTH,
         required=True,
         validators=[UniqueValidator(queryset=User.objects.all())])
@@ -53,7 +54,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UserSignUpSerializer(serializers.ModelSerializer):
     username = serializers.RegexField(
-        regex=r'^[\w.@+-]+\Z',
+        regex=INVALID_CHAR,
         max_length=USERNAME_FIELD_MAX_LENGTH,
         required=True)
     email = serializers.EmailField(
@@ -89,7 +90,7 @@ class UserSignUpSerializer(serializers.ModelSerializer):
 
 class UserGetTokenSerializer(serializers.Serializer):
     username = serializers.RegexField(
-        regex=r'^[\w.@+-]+\Z',
+        regex=INVALID_CHAR,
         max_length=USERNAME_FIELD_MAX_LENGTH,
         required=True)
     confirmation_code = serializers.CharField(required=True)
