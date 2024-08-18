@@ -153,8 +153,8 @@ class AuthorSerializer(serializers.ModelSerializer):
 class ReviewSerializer(AuthorSerializer):
     class Meta:
         model = Review
-        fields = ('id', 'author', 'title', 'text',
-                  'pub_date', 'score',)
+        fields = ('id', 'text', 'author',
+                  'score', 'pub_date')
         read_only_fields = ('author', 'pub_date', 'title',)
 
     def validate(self, data):
@@ -176,6 +176,6 @@ class ReviewSerializer(AuthorSerializer):
 
 class CommentSerializer(AuthorSerializer):
     class Meta:
-        fields = ('id', 'author', 'review', 'text', 'pub_date',)
+        fields = ('id', 'text', 'author', 'pub_date')
         model = Comment
         read_only_fields = ('author', 'pub_date', 'review',)
