@@ -41,7 +41,8 @@ class UserSignUpViewSet(mixins.CreateModelMixin,
         if User.objects.filter(
                 email=request.data.get('email'),
                 username=request.data.get('username')).exists():
-            user = get_object_or_404(User, email=request.data.get('email'))
+            user = get_object_or_404(User,
+                                     email=request.data.get('email'))
             response_data = request.data
         else:
             serializer.is_valid(raise_exception=True)
@@ -72,9 +73,7 @@ class UserGetTokenViewSet(mixins.CreateModelMixin,
             message = {'token': str(token)}
             return Response(message, status=status.HTTP_200_OK)
         else:
-            bad_request_message = {'Error': 'Отсутствует'
-                                            ' обязательное поле или оно некорректно'}
-            return Response(bad_request_message, status=status.HTTP_400_BAD_REQUEST)
+            return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UsersViewSet(viewsets.ModelViewSet):
@@ -93,17 +92,21 @@ class UsersViewSet(viewsets.ModelViewSet):
             detail=False)
     def get_user_profile(self, request):
         if request.method == 'GET':
-            user = get_object_or_404(User, username=request.user.username)
+            user = get_object_or_404(User,
+                                     username=request.user.username)
             serializer = UserSerializer(user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data,
+                            status=status.HTTP_200_OK)
         if request.method == 'PATCH':
             serializer = UserSerializer(request.user,
                                         data=request.data,
                                         partial=True)
             if serializer.is_valid(raise_exception=True):
                 serializer.save(role=request.user.role)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(serializer.data,
+                                status=status.HTTP_200_OK)
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class CategoryViewSet(ListCreateDestroyViewSet):
@@ -151,7 +154,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.get_title().reviews.all()
 
-
     def perform_create(self, serializer):
         serializer.save(
             author=self.request.user,
@@ -174,7 +176,6 @@ class CommentsViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return self.get_review().comments.select_related('author')
-
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user, review=self.get_review())
