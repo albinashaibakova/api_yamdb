@@ -2,14 +2,11 @@ from django.contrib.auth import get_user_model
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
 
-from api_yamdb.settings import (EMAIL_FIELD_MAX_LENGTH,
-                                INVALID_CHAR,
-                                FIRST_NAME_FIELD_MAX_LENGTH,
-                                LAST_NAME_FIELD_MAX_LENGTH,
-                                USERNAME_FIELD_MAX_LENGTH,
-                                )
+from api_yamdb.settings import (
+    INVALID_CHAR,
+    USERNAME_FIELD_MAX_LENGTH,
+)
 from reviews.models import (Category,
                             Comment,
                             Genre,
@@ -20,24 +17,6 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
-    username = serializers.RegexField(
-        regex=INVALID_CHAR,
-        max_length=USERNAME_FIELD_MAX_LENGTH,
-        required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())])
-    email = serializers.EmailField(
-        max_length=EMAIL_FIELD_MAX_LENGTH,
-        required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())])
-    first_name = serializers.CharField(
-        max_length=FIRST_NAME_FIELD_MAX_LENGTH,
-        required=False
-    )
-    last_name = serializers.CharField(
-        max_length=LAST_NAME_FIELD_MAX_LENGTH,
-        required=False
-    )
-
     def validate_username(self, value):
         username = value
         if username == 'me':
@@ -53,14 +32,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserSignUpSerializer(serializers.ModelSerializer):
-    username = serializers.RegexField(
-        regex=INVALID_CHAR,
-        max_length=USERNAME_FIELD_MAX_LENGTH,
-        required=True)
-    email = serializers.EmailField(
-        max_length=EMAIL_FIELD_MAX_LENGTH,
-        required=True)
-
     def validate(self, data):
         username = data.get('username')
         email = data.get('email')
