@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
-from rest_framework import (filters, mixins, permissions,
+from rest_framework import (filters, permissions,
                             status, viewsets)
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -57,7 +57,7 @@ class UserSignUpViewSet(UserSignupTokenViewSet):
 class UserGetTokenViewSet(UserSignupTokenViewSet):
     serializer_class = UserGetTokenSerializer
 
-    def create(self, request):
+    def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data.get('username')
@@ -129,7 +129,6 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-
     serializer_class = ReviewSerializer
     permission_classes = (IsAuthorAdminModeratorOrReadOnly,)
     title_id_kwarg = 'title_id'
@@ -149,7 +148,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentsViewSet(viewsets.ModelViewSet):
-
     serializer_class = CommentSerializer
     permission_classes = (IsAuthorAdminModeratorOrReadOnly,)
     review_id_kwarg = 'review_id'
@@ -158,7 +156,8 @@ class CommentsViewSet(viewsets.ModelViewSet):
     def get_review(self):
         return get_object_or_404(
             Review,
-            pk=self.kwargs[self.review_id_kwarg]
+            pk=self.kwargs[self.review_id_kwarg],
+            title=get_object_or_404(Title, pk=self.kwargs['title_id']),
         )
 
     def get_queryset(self):

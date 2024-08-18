@@ -41,7 +41,7 @@ class CustomUser(AbstractUser):
         blank=False
     )
     first_name = models.CharField(
-        max_length=NAME_FIELD_MAX_LENGTH,
+        max_length=FIRST_NAME_FIELD_MAX_LENGTH,
         blank=True
     )
     last_name = models.CharField(
