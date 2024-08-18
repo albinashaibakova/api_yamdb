@@ -76,7 +76,7 @@ class CustomUser(AbstractUser):
         return self.role == self.USER
 
 
-class Genre(models.Model):
+class BaseGenreCategory(models.Model):
     name = models.CharField(
         max_length=NAME_FIELD_MAX_LENGTH,
         verbose_name='Hазвание'
@@ -93,26 +93,18 @@ class Genre(models.Model):
         return self.name
 
     class Meta:
+        abstract = True
+
+
+class Genre(BaseGenreCategory):
+
+    class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'жанры'
         ordering = ('name',)
 
 
-class Category(models.Model):
-    name = models.CharField(
-        max_length=NAME_FIELD_MAX_LENGTH,
-        verbose_name='Hазвание'
-    )
-    slug = models.SlugField(
-        max_length=SLUG_FIELD_MAX_LENGTH,
-        unique=True,
-        validators=[
-            RegexValidator(regex=INVALID_CHAR)
-        ]
-    )
-
-    def __str__(self):
-        return self.name
+class Category(BaseGenreCategory):
 
     class Meta:
         verbose_name = 'Категория'
@@ -123,7 +115,7 @@ class Category(models.Model):
 class Title(models.Model):
     name = models.CharField(
         max_length=NAME_FIELD_MAX_LENGTH,
-        verbose_name='Hазвание',
+        verbose_name='Hазвание'
     )
     description = models.TextField(
         blank=True,
@@ -151,9 +143,6 @@ class Title(models.Model):
         related_name='titles',
         verbose_name='Жанр'
     )
-
-    def __str__(self):
-        return self.name
 
     class Meta:
         verbose_name = 'Произведение'
