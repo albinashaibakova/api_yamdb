@@ -10,7 +10,8 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from reviews.models import Category, Genre, Review, Title
 from .filters import TitleFilter
-from .mixins import ListCreateDestroyViewSet
+from .mixins import (ListCreateDestroyViewSet,
+                     UserSignupTokenViewSet)
 from .permissions import (IsAdminOrReadOnly,
                           IsAdminOrSuperuser,
                           IsAuthorAdminModeratorOrReadOnly)
@@ -29,11 +30,8 @@ from .utils import send_confirmation_email
 User = get_user_model()
 
 
-class UserSignUpViewSet(mixins.CreateModelMixin,
-                        viewsets.GenericViewSet):
-    queryset = User.objects.all()
+class UserSignUpViewSet(UserSignupTokenViewSet):
     serializer_class = UserSignUpSerializer
-    permission_classes = (permissions.AllowAny,)
 
     def create(self, request, *args, **kwargs):
 
@@ -56,11 +54,8 @@ class UserSignUpViewSet(mixins.CreateModelMixin,
         return Response(response_data, status=status.HTTP_200_OK)
 
 
-class UserGetTokenViewSet(mixins.CreateModelMixin,
-                          viewsets.GenericViewSet):
-    queryset = User.objects.all()
+class UserGetTokenViewSet(UserSignupTokenViewSet):
     serializer_class = UserGetTokenSerializer
-    permission_classes = (permissions.AllowAny,)
 
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -79,12 +74,12 @@ class UserGetTokenViewSet(mixins.CreateModelMixin,
 class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsAdminOrSuperuser,)
     lookup_field = 'username'
     search_fields = ('username',)
     http_method_names = ('get', 'post', 'patch', 'delete',
                          'head', 'options')
     filter_backends = (filters.SearchFilter,)
+    permission_classes = (IsAdminOrSuperuser,)
 
     @action(methods=('get', 'patch'),
             url_path='me',
@@ -112,19 +107,11 @@ class UsersViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(ListCreateDestroyViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
-    permission_classes = (IsAdminOrReadOnly,)
 
 
 class GenreViewSet(ListCreateDestroyViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
-    permission_classes = (IsAdminOrReadOnly,)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
