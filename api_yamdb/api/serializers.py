@@ -151,3 +151,4 @@ class CommentSerializer(AuthorSerializer):
         fields = ('id', 'text', 'author', 'pub_date')
         model = Comment
         read_only_fields = ('author', 'pub_date', 'review',)
+        
