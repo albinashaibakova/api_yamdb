@@ -110,9 +110,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES':
-        ['rest_framework.permissions.IsAuthenticated', ],
+        ('rest_framework.permissions.IsAuthenticated',),
     'DEFAULT_AUTHENTICATION_CLASSES':
-        ['rest_framework_simplejwt.authentication.JWTAuthentication', ],
+        ('rest_framework_simplejwt.authentication.JWTAuthentication',),
     'DEFAULT_PAGINATION_CLASS':
         'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
@@ -128,3 +128,15 @@ EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = BASE_DIR / 'api' / 'sent_emails'
 
 EMAIL_ADDRESS = 'registration@yamb.ru'
+
+# Constants
+
+EMAIL_FIELD_MAX_LENGTH = 254
+FIRST_NAME_FIELD_MAX_LENGTH = 150
+LAST_NAME_FIELD_MAX_LENGTH = 150
+NAME_FIELD_MAX_LENGTH = 256
+ROLE_MAX_LENGTH = 20
+SLUG_FIELD_MAX_LENGTH = 50
+USERNAME_FIELD_MAX_LENGTH = 150
+
+INVALID_CHAR = r'^[-a-zA-Z0-9_]+$'

@@ -60,7 +60,7 @@ class UserGetTokenViewSet(mixins.CreateModelMixin,
                           viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = UserGetTokenSerializer
-    permission_classes = (permissions.AllowAny, )
+    permission_classes = (permissions.AllowAny,)
 
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -79,7 +79,7 @@ class UserGetTokenViewSet(mixins.CreateModelMixin,
 class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsAdminOrSuperuser, )
+    permission_classes = (IsAdminOrSuperuser,)
     lookup_field = 'username'
     search_fields = ('username',)
     http_method_names = ('get', 'post', 'patch', 'delete',
@@ -88,7 +88,7 @@ class UsersViewSet(viewsets.ModelViewSet):
 
     @action(methods=('get', 'patch'),
             url_path='me',
-            permission_classes=(permissions.IsAuthenticated, ),
+            permission_classes=(permissions.IsAuthenticated,),
             detail=False)
     def get_user_profile(self, request):
         if request.method == 'GET':
@@ -133,10 +133,10 @@ class TitleViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
     permission_classes = (IsAdminOrReadOnly,)
-    http_method_names = ['get', 'post', 'patch', 'delete']
+    http_method_names = ('get', 'post', 'patch', 'delete')
 
     def get_serializer_class(self):
-        if self.action in ['list', 'retrieve']:
+        if self.action in ('list', 'retrieve'):
             return TitleListSerializer
         return TitleSerializer
 
@@ -146,7 +146,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (IsAuthorAdminModeratorOrReadOnly,)
     title_id_kwarg = 'title_id'
-    http_method_names = ['get', 'post', 'patch', 'delete']
+    http_method_names = ('get', 'post', 'patch', 'delete')
 
     def get_title(self):
         return get_object_or_404(Title, pk=self.kwargs[self.title_id_kwarg])
@@ -166,7 +166,7 @@ class CommentsViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = (IsAuthorAdminModeratorOrReadOnly,)
     review_id_kwarg = 'review_id'
-    http_method_names = ['get', 'post', 'patch', 'delete']
+    http_method_names = ('get', 'post', 'patch', 'delete')
 
     def get_review(self):
         return get_object_or_404(
