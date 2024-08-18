@@ -39,8 +39,8 @@ class UserSignUpSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Cannot use username me'
             )
-        if (User.objects.filter(username=username).exists() and
-                User.objects.filter(email=email).exists()):
+        if (User.objects.filter(username=username).exists()
+                and User.objects.filter(email=email).exists()):
             raise serializers.ValidationError({
                 'username': username,
                 'email': email})
