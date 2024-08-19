@@ -128,7 +128,8 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = (IsAuthorAdminModeratorOrReadOnly,)
+    permission_classes = (IsAuthorAdminModeratorOrReadOnly,
+                          permissions.IsAuthenticatedOrReadOnly)
     title_id_kwarg = 'title_id'
     http_method_names = ('get', 'post', 'patch', 'delete')
 
@@ -147,7 +148,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentsViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = (IsAuthorAdminModeratorOrReadOnly,)
+    permission_classes = (IsAuthorAdminModeratorOrReadOnly,
+                          permissions.IsAuthenticatedOrReadOnly)
     review_id_kwarg = 'review_id'
     http_method_names = ('get', 'post', 'patch', 'delete')
 
