@@ -7,16 +7,15 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from api_yamdb.settings import (EMAIL_FIELD_MAX_LENGTH,
                                 INVALID_CHAR,
-                                FIRST_NAME_FIELD_MAX_LENGTH,
-                                LAST_NAME_FIELD_MAX_LENGTH,
                                 NAME_FIELD_MAX_LENGTH,
                                 ROLE_MAX_LENGTH,
                                 SLUG_FIELD_MAX_LENGTH,
                                 USERNAME_FIELD_MAX_LENGTH,
                                 )
+from api.validators import validator_for_username
 
 
-class CustomUser(AbstractUser):
+class YamdbUser(AbstractUser):
     USER = 'user'
     MODERATOR = 'moderator'
     ADMIN = 'admin'
@@ -30,35 +29,24 @@ class CustomUser(AbstractUser):
     username = models.CharField(
         max_length=USERNAME_FIELD_MAX_LENGTH,
         unique=True,
-        blank=False,
-        validators=[
-            RegexValidator(regex=INVALID_CHAR)
-        ]
+        validators=(validator_for_username,)
     )
     email = models.EmailField(
         max_length=EMAIL_FIELD_MAX_LENGTH,
         unique=True,
         blank=False
     )
-    first_name = models.CharField(
-        max_length=FIRST_NAME_FIELD_MAX_LENGTH,
-        blank=True
-    )
-    last_name = models.CharField(
-        max_length=LAST_NAME_FIELD_MAX_LENGTH,
-        blank=True
-    )
     bio = models.TextField(blank=True,
                            verbose_name='Bio')
     role = models.CharField(choices=ROLE_CHOICES,
-                            default='user',
+                            default=USER,
                             max_length=ROLE_MAX_LENGTH,
                             verbose_name='Role')
 
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-        ordering = ('id',)
+        ordering = ('username',)
 
     def __str__(self):
         return self.username
@@ -70,10 +58,6 @@ class CustomUser(AbstractUser):
     @property
     def is_admin(self):
         return self.role == self.ADMIN
-
-    @property
-    def is_user(self):
-        return self.role == self.USER
 
 
 class BaseGenreCategory(models.Model):
@@ -188,7 +172,7 @@ class BaseCommentReview(models.Model):
 class Review(BaseCommentReview):
 
     author = models.ForeignKey(
-        CustomUser,
+        YamdbUser,
         verbose_name='Автор',
         on_delete=models.CASCADE,
         related_name='reviews'
@@ -226,7 +210,7 @@ class Review(BaseCommentReview):
 class Comment(BaseCommentReview):
 
     author = models.ForeignKey(
-        CustomUser,
+        YamdbUser,
         verbose_name='Автор',
         on_delete=models.CASCADE,
         related_name='comments'

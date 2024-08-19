@@ -58,7 +58,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'api_yamdb.wsgi.application'
 
-AUTH_USER_MODEL = 'reviews.CustomUser'
+AUTH_USER_MODEL = 'reviews.YamdbUser'
 
 # Database
 
@@ -132,6 +132,7 @@ EMAIL_ADDRESS = 'registration@yamb.ru'
 # Constants
 
 EMAIL_FIELD_MAX_LENGTH = 254
+INVALID_USERNAME = 'me'
 FIRST_NAME_FIELD_MAX_LENGTH = 150
 LAST_NAME_FIELD_MAX_LENGTH = 150
 NAME_FIELD_MAX_LENGTH = 256
