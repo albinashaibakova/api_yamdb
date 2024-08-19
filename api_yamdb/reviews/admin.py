@@ -1,13 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import (Category,
-                     Comment,
-                     YamdbUser,
-                     Genre,
-                     GenreTitle,
-                     Review,
-                     Title)
+from reviews.models import (Category, Comment, Genre, GenreTitle, Review,
+                            Title, YamdbUser)
 
 UserAdmin.fieldsets += (
     ('Extra Fields', {'fields': ('bio', 'role')}),

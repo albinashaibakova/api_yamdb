@@ -2,7 +2,7 @@ import re
 
 from django.core.exceptions import ValidationError
 
-from api_yamdb.settings import INVALID_USERNAME
+from api.constants import INVALID_USERNAME
 
 
 def validator_for_username(username):

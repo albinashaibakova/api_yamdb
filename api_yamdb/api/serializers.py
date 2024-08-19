@@ -3,17 +3,9 @@ from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from api_yamdb.settings import (
-    INVALID_CHAR,
-    INVALID_USERNAME,
-    USERNAME_FIELD_MAX_LENGTH,
-)
+from api.constants import INVALID_CHAR, USERNAME_FIELD_MAX_LENGTH
 from api.validators import validator_for_username
-from reviews.models import (Category,
-                            Comment,
-                            Genre,
-                            Review,
-                            Title)
+from reviews.models import Category, Comment, Genre, Review, Title
 
 User = get_user_model()
 
@@ -22,8 +14,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name',
-                  'last_name', 'bio', 'role')
+        fields = (
+            'username', 'email', 'first_name',
+            'last_name', 'bio', 'role'
+        )
 
     def validate_username(self, value):
         return validator_for_username(value)
@@ -61,7 +55,8 @@ class UserGetTokenSerializer(serializers.Serializer):
     username = serializers.RegexField(
         regex=INVALID_CHAR,
         max_length=USERNAME_FIELD_MAX_LENGTH,
-        required=True)
+        required=True
+    )
     confirmation_code = serializers.CharField(required=True)
 
 
@@ -84,8 +79,10 @@ class TitleListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ('id', 'name', 'year', 'description',
-                  'category', 'genre', 'rating')
+        fields = (
+            'id', 'name', 'year', 'description',
+            'category', 'genre', 'rating'
+        )
 
     def get_rating(self, obj):
         title_reviews = obj.reviews.all()
@@ -96,17 +93,23 @@ class TitleListSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    category = serializers.SlugRelatedField(slug_field='slug',
-                                            queryset=Category.objects.all())
-    genre = serializers.SlugRelatedField(slug_field='slug',
-                                         many=True,
-                                         allow_empty=False,
-                                         queryset=Genre.objects.all())
+    category = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Category.objects.all()
+    )
+    genre = serializers.SlugRelatedField(
+        slug_field='slug',
+        many=True,
+        allow_empty=False,
+        queryset=Genre.objects.all()
+    )
 
     class Meta:
         model = Title
-        fields = ('id', 'name', 'year', 'description',
-                  'category', 'genre',)
+        fields = (
+            'id', 'name', 'year', 'description',
+            'category', 'genre',
+        )
 
     def to_representation(self, instance):
         return TitleListSerializer(instance).data
@@ -123,8 +126,10 @@ class AuthorSerializer(serializers.ModelSerializer):
 class ReviewSerializer(AuthorSerializer):
     class Meta:
         model = Review
-        fields = ('id', 'text', 'author',
-                  'score', 'pub_date')
+        fields = (
+            'id', 'text', 'author',
+            'score', 'pub_date'
+        )
         read_only_fields = ('author', 'pub_date', 'title',)
 
     def validate(self, data):
