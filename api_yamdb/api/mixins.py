@@ -3,7 +3,7 @@ from rest_framework import (filters, mixins,
                             permissions,
                             viewsets)
 
-from .permissions import (IsAdminOrReadOnly,)
+from .permissions import IsAdminOrReadOnly
 
 User = get_user_model()
 
