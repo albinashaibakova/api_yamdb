@@ -137,6 +137,10 @@ class Title(models.Model):
     def __str__(self):
         return self.name[:MAX_STR_VALUE_LENGTH]
 
+    def display_genre(self):
+        return ', '.join([genre.name for genre in self.genre.all()[:3]])
+    display_genre.short_description = 'Genre'
+
 
 class GenreTitle(models.Model):
     title_id = models.ForeignKey(
