@@ -5,8 +5,10 @@ from rest_framework import serializers
 
 from api_yamdb.settings import (
     INVALID_CHAR,
+    INVALID_USERNAME,
     USERNAME_FIELD_MAX_LENGTH,
 )
+from api.validators import validator_for_username
 from reviews.models import (Category,
                             Comment,
                             Genre,
@@ -17,18 +19,14 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
-    def validate_username(self, value):
-        username = value
-        if username == 'me':
-            raise serializers.ValidationError(
-                'Cannot use username me'
-            )
-        return value
 
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name',
                   'last_name', 'bio', 'role')
+
+    def validate_username(self, value):
+        return validator_for_username(value)
 
 
 class UserSignUpSerializer(serializers.ModelSerializer):
