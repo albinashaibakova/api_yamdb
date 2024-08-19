@@ -29,6 +29,10 @@ auth_urls = [
 ]
 
 urlpatterns = [
-    path('auth/', include(auth_urls)),
-    path('', include(v1_router.urls))
+    path(
+        'v1/', include([
+            path('auth/', include(auth_urls)),
+            path('', include(v1_router.urls)),
+        ])
+    )
 ]
