@@ -22,21 +22,21 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserSignUpSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(
-        max_length=USERNAME_FIELD_MAX_LENGTH,
-        validators=[validator_for_username],
-        required=True
-    )
-    email = serializers.EmailField(
-        required=True,
-        max_length=USERNAME_FIELD_MAX_LENGTH
-    )
 
     class Meta:
         model = User
         fields = ('username', 'email')
 
-    def validate(self, data):
+    def validate_email(self, email, username, raise_exception=True):
+        if User.objects.filter(email=email,
+                               username=username).exists():
+            return email
+        elif User.objects.filter(email=email).exists():
+            raise serializers.ValidationError({"email": email})
+        return email
+
+
+    def validate(self, data, raise_exception=True):
         username = data.get('username')
         email = data.get('email')
         if User.objects.filter(email=email,
@@ -56,6 +56,8 @@ class UserSignUpSerializer(serializers.ModelSerializer):
                 {'username': 'Username already taken'}
             )
         return data
+
+
 
     def create(self, validated_data):
         email = validated_data.get('email')
