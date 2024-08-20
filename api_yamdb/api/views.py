@@ -54,8 +54,6 @@ class UserGetTokenView(APIView):
             token = AccessToken.for_user(user)
             message = {'token': str(token)}
             return Response(message, status=status.HTTP_200_OK)
-        else:
-            return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UsersViewSet(viewsets.ModelViewSet):
