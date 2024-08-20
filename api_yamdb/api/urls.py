@@ -6,8 +6,8 @@ from .views import (CategoryViewSet,
                     GenreViewSet,
                     TitleViewSet,
                     ReviewViewSet,
-                    UserGetTokenViewSet,
-                    UserSignUpViewSet,
+                    UserGetTokenView,
+                    UserSignUpView,
                     UsersViewSet)
 
 
@@ -28,9 +28,9 @@ v1_router.register(
 
 
 auth_urls = [
-    path('signup/', UserSignUpViewSet.as_view({'post': 'create'}),
+    path('signup/', UserSignUpView.as_view(),
          name='signup'),
-    path('token/', UserGetTokenViewSet.as_view({'post': 'create'}),
+    path('token/', UserGetTokenView.as_view(),
          name='token')
 ]
 

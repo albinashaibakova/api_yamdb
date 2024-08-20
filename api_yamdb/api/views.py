@@ -8,10 +8,10 @@ from rest_framework import (filters, permissions,
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework.views import APIView
 
 from api.filters import TitleFilter
-from api.mixins import (ListCreateDestroyViewSet,
-                        UserSignupTokenViewSet)
+from api.mixins import ListCreateDestroyViewSet
 from api.permissions import (IsAdminOrReadOnly,
                              IsAdminOrSuperuser,
                              IsAuthorAdminModeratorOrReadOnly)
@@ -25,42 +25,33 @@ from api.serializers import (CategorySerializer,
                              ReviewSerializer,
                              CommentSerializer
                              )
-from api_yamdb.settings import INVALID_USERNAME
+from api_yamdb.settings import (INVALID_USERNAME,
+                                USER_PROFILE_PATH)
 from reviews.models import Category, Genre, Review, Title
 from .utils import send_confirmation_email
 
 User = get_user_model()
 
 
-class UserSignUpViewSet(UserSignupTokenViewSet):
-    serializer_class = UserSignUpSerializer
+class UserSignUpView(APIView):
+    permission_classes = (permissions.AllowAny,)
 
-    def create(self, request, *args, **kwargs):
-
+    def post(self, request, *args, **kwargs):
         serializer = UserSignUpSerializer(data=request.data)
-        if User.objects.filter(
-                email=request.data.get('email'),
-                username=request.data.get('username')).exists():
-            user = get_object_or_404(User,
-                                     email=request.data.get('email'))
-            response_data = request.data
-        else:
-            serializer.is_valid(raise_exception=True)
-            user = User.objects.create_user(**serializer.validated_data)
-            response_data = serializer.data
-
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        user = User.objects.get(username=serializer.validated_data['username'])
         confirmation_code = default_token_generator.make_token(user)
         send_confirmation_email(email=user.email,
                                 confirmation_code=confirmation_code)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-        return Response(response_data, status=status.HTTP_200_OK)
 
+class UserGetTokenView(APIView):
+    permission_classes = (permissions.AllowAny,)
 
-class UserGetTokenViewSet(UserSignupTokenViewSet):
-    serializer_class = UserGetTokenSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
+    def post(self, request, *args, **kwargs):
+        serializer = UserGetTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         username = serializer.validated_data.get('username')
         confirmation_code = serializer.validated_data.get('confirmation_code')
@@ -84,7 +75,7 @@ class UsersViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrSuperuser,)
 
     @action(methods=('get', 'patch'),
-            url_path=INVALID_USERNAME,
+            url_path=USER_PROFILE_PATH,
             permission_classes=(permissions.IsAuthenticated,),
             detail=False)
     def get_user_profile(self, request):
