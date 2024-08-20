@@ -27,38 +27,57 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserSignUpSerializer(serializers.ModelSerializer):
-    def validate(self, data):
-        username = data.get('username')
-        email = data.get('email')
-        if username == 'me':
-            raise serializers.ValidationError(
-                'Cannot use username me'
-            )
-        if (User.objects.filter(username=username).exists()
-                and User.objects.filter(email=email).exists()):
-            raise serializers.ValidationError({
-                'username': username,
-                'email': email})
-        if User.objects.filter(username=username).exists():
-            raise serializers.ValidationError(
-                {'username': username}
-            )
-        if User.objects.filter(email=email).exists():
-            raise serializers.ValidationError(
-                {'email': email}
-            )
-        return data
+    username = serializers.CharField(
+        max_length=USERNAME_FIELD_MAX_LENGTH,
+        validators=[validator_for_username],
+        required=True
+    )
+    email = serializers.EmailField(
+        required=True,
+        max_length=USERNAME_FIELD_MAX_LENGTH
+    )
 
     class Meta:
         model = User
         fields = ('username', 'email')
 
+    def validate(self, data):
+        username = data.get('username')
+        email = data.get('email')
+        if User.objects.filter(email=email,
+                               username=username).exists():
+            return data
+        elif (User.objects.filter(email=email).exists()
+              and User.objects.filter(username=username).exists()):
+            raise serializers.ValidationError(
+                {'email': 'Email already registered',
+                 'username': 'Username already taken'})
+        elif User.objects.filter(email=email).exists():
+            raise serializers.ValidationError(
+                {'email': 'Email already registered'}
+            )
+        elif User.objects.filter(username=username).exists():
+            raise serializers.ValidationError(
+                {'username': 'Username already taken'}
+            )
+        return data
+
+    def create(self, validated_data):
+        email = validated_data.get('email')
+        username = validated_data.get('username')
+        user, created = User.objects.get_or_create(
+            email=email,
+            username=username
+        )
+        return user
+
 
 class UserGetTokenSerializer(serializers.Serializer):
-    username = serializers.RegexField(
-        regex=INVALID_CHAR,
+    username = serializers.CharField(
         max_length=USERNAME_FIELD_MAX_LENGTH,
-        required=True)
+        required=True,
+        validators=[validator_for_username]
+    )
     confirmation_code = serializers.CharField(required=True)
 
 
