@@ -23,8 +23,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'django_filters',
+    'reviews',
     'api',
-    'reviews'
 ]
 
 MIDDLEWARE = [
@@ -58,7 +58,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'api_yamdb.wsgi.application'
 
-AUTH_USER_MODEL = 'reviews.CustomUser'
+AUTH_USER_MODEL = 'reviews.YamdbUser'
 
 # Database
 
@@ -128,15 +128,3 @@ EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = BASE_DIR / 'api' / 'sent_emails'
 
 EMAIL_ADDRESS = 'registration@yamb.ru'
-
-# Constants
-
-EMAIL_FIELD_MAX_LENGTH = 254
-FIRST_NAME_FIELD_MAX_LENGTH = 150
-LAST_NAME_FIELD_MAX_LENGTH = 150
-NAME_FIELD_MAX_LENGTH = 256
-ROLE_MAX_LENGTH = 20
-SLUG_FIELD_MAX_LENGTH = 50
-USERNAME_FIELD_MAX_LENGTH = 150
-
-INVALID_CHAR = r'^[-a-zA-Z0-9_]+$'
