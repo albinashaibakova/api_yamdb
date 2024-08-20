@@ -10,7 +10,6 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.views import APIView
 
-from api.constants import INVALID_USERNAME, USER_PROFILE_PATH
 from api.filters import TitleFilter
 from api.mixins import ListCreateDestroyViewSet
 from api.permissions import (IsAdminOrReadOnly,
@@ -22,6 +21,7 @@ from api.serializers import (CategorySerializer, CommentSerializer,
                              UserGetTokenSerializer, UserSerializer,
                              UserSignUpSerializer)
 from api.utils import send_confirmation_email
+from reviews.constants import INVALID_USERNAME, USER_PROFILE_PATH
 from reviews.models import Category, Genre, Review, Title
 
 User = get_user_model()
@@ -54,6 +54,7 @@ class UserGetTokenView(APIView):
             token = AccessToken.for_user(user)
             message = {'token': str(token)}
             return Response(message, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UsersViewSet(viewsets.ModelViewSet):

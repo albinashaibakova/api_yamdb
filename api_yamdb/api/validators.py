@@ -2,7 +2,7 @@ import re
 
 from django.core.exceptions import ValidationError
 
-from api.constants import INVALID_CHAR, INVALID_USERNAME
+from reviews.constants import INVALID_CHAR, INVALID_USERNAME
 
 
 def validator_for_username(username):
