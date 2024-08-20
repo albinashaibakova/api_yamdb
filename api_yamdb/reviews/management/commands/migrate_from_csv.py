@@ -1,11 +1,11 @@
 import csv
 from typing import Any, Optional
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.db import models
 
-from api_yamdb.settings import DATA_CSV_DIR
 from reviews.models import Category, Comment, Genre, GenreTitle, Review, Title
 
 User = get_user_model()
@@ -32,7 +32,7 @@ COLUMN_FOREIGN_MODEL: dict[str, models.Model] = {
 
 
 def load_data(filename: str, model: models.Model, mappings: dict):
-    with open(f'{DATA_CSV_DIR}/{filename}.csv', encoding='utf-8') as file:
+    with open(f'{settings.DATA_CSV_DIR}/{filename}.csv', encoding='utf-8') as file:
         reader = csv.DictReader(file)
         for row in reader:
             original = dict(row)
