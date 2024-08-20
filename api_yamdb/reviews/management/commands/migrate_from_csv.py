@@ -32,7 +32,10 @@ COLUMN_FOREIGN_MODEL: dict[str, models.Model] = {
 
 
 def load_data(filename: str, model: models.Model, mappings: dict):
-    with open(f'{settings.DATA_CSV_DIR}/{filename}.csv', encoding='utf-8') as file:
+    with open(
+            f'{settings.DATA_CSV_DIR}/{filename}.csv',
+            encoding='utf-8'
+    ) as file:
         reader = csv.DictReader(file)
         for row in reader:
             original = dict(row)

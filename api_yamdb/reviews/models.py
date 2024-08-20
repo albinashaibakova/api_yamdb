@@ -5,11 +5,10 @@ from django.core.validators import (
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from api.validators import validator_for_username
-from reviews.constants import (EMAIL_FIELD_MAX_LENGTH, INVALID_CHAR,
+from reviews.constants import (EMAIL_FIELD_MAX_LENGTH,
                                MAX_STR_VALUE_LENGTH, MAX_VALUE_SCORE,
                                MIN_VALUE_SCORE, NAME_FIELD_MAX_LENGTH,
-                               ROLE_MAX_LENGTH, SLUG_FIELD_MAX_LENGTH,
-                               USERNAME_FIELD_MAX_LENGTH)
+                               ROLE_MAX_LENGTH, USERNAME_FIELD_MAX_LENGTH)
 from reviews.validators import validate_year
 
 

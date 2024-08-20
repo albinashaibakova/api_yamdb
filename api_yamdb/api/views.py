@@ -21,7 +21,7 @@ from api.serializers import (CategorySerializer, CommentSerializer,
                              UserGetTokenSerializer, UserSerializer,
                              UserSignUpSerializer)
 from api.utils import send_confirmation_email
-from reviews.constants import INVALID_USERNAME, USER_PROFILE_PATH
+from reviews.constants import USER_PROFILE_PATH
 from reviews.models import Category, Genre, Review, Title
 
 User = get_user_model()

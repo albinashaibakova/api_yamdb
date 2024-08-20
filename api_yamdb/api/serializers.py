@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from api.validators import validator_for_username
-from reviews.constants import INVALID_CHAR, USERNAME_FIELD_MAX_LENGTH
+from reviews.constants import USERNAME_FIELD_MAX_LENGTH
 from reviews.models import Category, Comment, Genre, Review, Title
 
 User = get_user_model()
