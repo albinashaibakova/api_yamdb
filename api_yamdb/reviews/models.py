@@ -47,7 +47,7 @@ class YamdbUser(AbstractUser):
         ordering = ('username',)
 
     def __str__(self):
-        return self.username
+        return self.username[:MAX_STR_VALUE_LENGTH]
 
     @property
     def is_moderator(self):
