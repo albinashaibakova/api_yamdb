@@ -14,6 +14,14 @@ https://github.com/DenisLyane
 Пользователи могут оставлять комментарии к отзывам.
 Добавлять отзывы, комментарии и ставить оценки могут только аутентифицированные пользователи.
 
+
+# Технологии
+* Python
+* Django
+* Django Rest Framework
+* SimpleJWT
+* SQLite3
+
 # Техническое описание проекта YaMDb
 
 - Ресурс **auth**: аутентификация.
@@ -94,4 +102,24 @@ sh set_up_data.sh
 
 ```
 python manage.py runserver
+```
+
+# Примеры запросов
+- Регистрация пользователя
+```
+curl --location 'http://127.0.0.1:8000/api/v1/auth/signup/' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "email": "email@domain.ru",
+  "username": "username"
+}'
+```
+- Получение токена
+```
+curl --location 'http://127.0.0.1:8000/api/v1/auth/token/' \
+--header 'Content-Type: application/json' \
+--data '{
+  "username": "username",
+  "confirmation_code": "token"
+}'
 ```
