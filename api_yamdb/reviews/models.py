@@ -4,16 +4,13 @@ from django.core.validators import (
 )
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from api_yamdb.settings import (
-    EMAIL_FIELD_MAX_LENGTH,
-    NAME_FIELD_MAX_LENGTH,
-    ROLE_MAX_LENGTH,
-    USERNAME_FIELD_MAX_LENGTH,
-)
+from api.constants import (EMAIL_FIELD_MAX_LENGTH, INVALID_CHAR,
+                           MAX_STR_VALUE_LENGTH, MAX_VALUE_SCORE,
+                           MIN_VALUE_SCORE, NAME_FIELD_MAX_LENGTH,
+                           ROLE_MAX_LENGTH, SLUG_FIELD_MAX_LENGTH,
+                           USERNAME_FIELD_MAX_LENGTH)
 from api.validators import validator_for_username
 from reviews.validators import validate_year
-
-MAX_STR_VALUE_LENGTH = 30
 
 
 class YamdbUser(AbstractUser):
@@ -157,21 +154,22 @@ class BaseCommentReview(models.Model):
         verbose_name='Дата публикации',
         auto_now_add=True
     )
+    author = models.ForeignKey(
+        YamdbUser,
+        verbose_name='Автор',
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
         abstract = True
+        ordering = ('-pub_date',)
 
     def __str__(self):
         return self.text[:MAX_STR_VALUE_LENGTH]
 
 
 class Review(BaseCommentReview):
-    author = models.ForeignKey(
-        YamdbUser,
-        verbose_name='Автор',
-        on_delete=models.CASCADE,
-        related_name='reviews'
-    )
+
     title = models.ForeignKey(
         Title,
         verbose_name='Произведение',
@@ -182,10 +180,12 @@ class Review(BaseCommentReview):
         verbose_name='Оценка',
         validators=(
             MinValueValidator(
-                1, message='Оценка должна быть 1 или больше.'
+                MIN_VALUE_SCORE,
+                message=f'Оценка должна быть {MIN_VALUE_SCORE} или больше.'
             ),
             MaxValueValidator(
-                10, message='Оценка не может быть больше 10.'
+                MAX_VALUE_SCORE,
+                message=f'Оценка не может быть больше {MAX_VALUE_SCORE}.'
             )
         )
     )
@@ -193,22 +193,17 @@ class Review(BaseCommentReview):
     class Meta:
         verbose_name = 'отзыв'
         verbose_name_plural = 'Отзывы'
+        default_related_name = 'reviews'
         constraints = [
             models.UniqueConstraint(
                 fields=('author', 'title'),
                 name='unique_author_title'
             )
         ]
-        ordering = ('-pub_date',)
 
 
 class Comment(BaseCommentReview):
-    author = models.ForeignKey(
-        YamdbUser,
-        verbose_name='Автор',
-        on_delete=models.CASCADE,
-        related_name='comments'
-    )
+
     review = models.ForeignKey(
         Review,
         verbose_name='Отзыв',
@@ -219,4 +214,4 @@ class Comment(BaseCommentReview):
     class Meta:
         verbose_name = 'комментарий'
         verbose_name_plural = 'Комментарии'
-        ordering = ('-pub_date',)
+        default_related_name = 'comments'
