@@ -1,18 +1,19 @@
-from datetime import datetime
-
-from django.core.validators import (MaxValueValidator,
-                                    MinValueValidator,
-                                    RegexValidator)
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator
+)
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from api_yamdb.settings import (EMAIL_FIELD_MAX_LENGTH,
-                                INVALID_CHAR,
-                                NAME_FIELD_MAX_LENGTH,
-                                ROLE_MAX_LENGTH,
-                                SLUG_FIELD_MAX_LENGTH,
-                                USERNAME_FIELD_MAX_LENGTH,
-                                )
+from api_yamdb.settings import (
+    EMAIL_FIELD_MAX_LENGTH,
+    NAME_FIELD_MAX_LENGTH,
+    ROLE_MAX_LENGTH,
+    USERNAME_FIELD_MAX_LENGTH,
+)
 from api.validators import validator_for_username
+from reviews.validators import validate_year
+
+MAX_STR_VALUE_LENGTH = 30
 
 
 class YamdbUser(AbstractUser):
@@ -65,35 +66,26 @@ class BaseGenreCategory(models.Model):
         max_length=NAME_FIELD_MAX_LENGTH,
         verbose_name='Hазвание'
     )
-    slug = models.SlugField(
-        max_length=SLUG_FIELD_MAX_LENGTH,
-        unique=True,
-        validators=[
-            RegexValidator(regex=INVALID_CHAR)
-        ]
-    )
-
-    def __str__(self):
-        return self.name
+    slug = models.SlugField(unique=True)
 
     class Meta:
         abstract = True
+        ordering = ('name',)
+
+    def __str__(self):
+        return self.name[:MAX_STR_VALUE_LENGTH]
 
 
 class Genre(BaseGenreCategory):
-
     class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'жанры'
-        ordering = ('name',)
 
 
 class Category(BaseGenreCategory):
-
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'категории'
-        ordering = ('name',)
 
 
 class Title(models.Model):
@@ -105,14 +97,9 @@ class Title(models.Model):
         blank=True,
         verbose_name='Описание'
     )
-    year = models.PositiveIntegerField(
+    year = models.SmallIntegerField(
         verbose_name='Год выпуска',
-        validators=[
-            MaxValueValidator(
-                int(datetime.now().year),
-                message='Год выпуска не может быть больше текущего.'
-            )
-        ],
+        validators=[validate_year],
     )
     category = models.ForeignKey(
         Category,
@@ -131,7 +118,10 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'произведения'
-        ordering = ('-year', 'name')
+        ordering = ('-year', 'name',)
+
+    def __str__(self):
+        return self.name[:MAX_STR_VALUE_LENGTH]
 
 
 class GenreTitle(models.Model):
@@ -149,13 +139,16 @@ class GenreTitle(models.Model):
     class Meta:
         verbose_name = 'Жанр произведения'
         verbose_name_plural = 'жанры произведений'
-        ordering = ('id',)
+        ordering = ('title_id', 'genre_id')
         constraints = [
             models.UniqueConstraint(
                 fields=('title_id', 'genre_id'),
                 name='genre_title_unique'
             )
         ]
+
+    def __str__(self):
+        return f'Произведение {self.title_id} - Жанр {self.genre_id}'
 
 
 class BaseCommentReview(models.Model):
@@ -168,9 +161,11 @@ class BaseCommentReview(models.Model):
     class Meta:
         abstract = True
 
+    def __str__(self):
+        return self.text[:MAX_STR_VALUE_LENGTH]
+
 
 class Review(BaseCommentReview):
-
     author = models.ForeignKey(
         YamdbUser,
         verbose_name='Автор',
@@ -208,7 +203,6 @@ class Review(BaseCommentReview):
 
 
 class Comment(BaseCommentReview):
-
     author = models.ForeignKey(
         YamdbUser,
         verbose_name='Автор',

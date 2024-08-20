@@ -1,14 +1,12 @@
 from django.contrib.auth import get_user_model
-from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
+from api.validators import validator_for_username
 from api_yamdb.settings import (
     INVALID_CHAR,
-    INVALID_USERNAME,
     USERNAME_FIELD_MAX_LENGTH,
 )
-from api.validators import validator_for_username
 from reviews.models import (Category,
                             Comment,
                             Genre,
@@ -19,7 +17,6 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name',
@@ -80,19 +77,12 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitleListSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     genre = GenreSerializer(read_only=True, many=True)
-    rating = serializers.SerializerMethodField()
+    rating = serializers.IntegerField(read_only=True, default=None)
 
     class Meta:
         model = Title
         fields = ('id', 'name', 'year', 'description',
                   'category', 'genre', 'rating')
-
-    def get_rating(self, obj):
-        title_reviews = obj.reviews.all()
-        if title_reviews:
-            return title_reviews.aggregate(Avg('score'))['score__avg']
-
-        return None
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -101,6 +91,7 @@ class TitleSerializer(serializers.ModelSerializer):
     genre = serializers.SlugRelatedField(slug_field='slug',
                                          many=True,
                                          allow_empty=False,
+                                         allow_null=False,
                                          queryset=Genre.objects.all())
 
     class Meta:
