@@ -3,15 +3,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from api.validators import validator_for_username
-from api_yamdb.settings import (
-    INVALID_CHAR,
-    USERNAME_FIELD_MAX_LENGTH,
-)
-from reviews.models import (Category,
-                            Comment,
-                            Genre,
-                            Review,
-                            Title)
+from reviews.constants import INVALID_CHAR, USERNAME_FIELD_MAX_LENGTH
+from reviews.models import Category, Comment, Genre, Review, Title
 
 User = get_user_model()
 
@@ -19,8 +12,10 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name',
-                  'last_name', 'bio', 'role')
+        fields = (
+            'username', 'email', 'first_name',
+            'last_name', 'bio', 'role'
+        )
 
     def validate_username(self, value):
         return validator_for_username(value)
@@ -133,9 +128,10 @@ class AuthorSerializer(serializers.ModelSerializer):
 class ReviewSerializer(AuthorSerializer):
     class Meta:
         model = Review
-        fields = ('id', 'text', 'author',
-                  'score', 'pub_date')
-        read_only_fields = ('author', 'pub_date', 'title',)
+        fields = (
+            'id', 'text', 'author',
+            'score', 'pub_date'
+        )
 
     def validate(self, data):
         if self.context['request'].method != 'POST':
@@ -158,4 +154,3 @@ class CommentSerializer(AuthorSerializer):
     class Meta:
         fields = ('id', 'text', 'author', 'pub_date')
         model = Comment
-        read_only_fields = ('author', 'pub_date', 'review',)

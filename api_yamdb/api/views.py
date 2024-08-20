@@ -15,20 +15,14 @@ from api.mixins import ListCreateDestroyViewSet
 from api.permissions import (IsAdminOrReadOnly,
                              IsAdminOrSuperuser,
                              IsAuthorAdminModeratorOrReadOnly)
-from api.serializers import (CategorySerializer,
-                             GenreSerializer,
-                             TitleSerializer,
-                             TitleListSerializer,
-                             UserGetTokenSerializer,
-                             UserSerializer,
-                             UserSignUpSerializer,
-                             ReviewSerializer,
-                             CommentSerializer
-                             )
-from api_yamdb.settings import (INVALID_USERNAME,
-                                USER_PROFILE_PATH)
+from api.serializers import (CategorySerializer, CommentSerializer,
+                             GenreSerializer, ReviewSerializer,
+                             TitleListSerializer, TitleSerializer,
+                             UserGetTokenSerializer, UserSerializer,
+                             UserSignUpSerializer)
+from api.utils import send_confirmation_email
+from reviews.constants import INVALID_USERNAME, USER_PROFILE_PATH
 from reviews.models import Category, Genre, Review, Title
-from .utils import send_confirmation_email
 
 User = get_user_model()
 
@@ -60,8 +54,7 @@ class UserGetTokenView(APIView):
             token = AccessToken.for_user(user)
             message = {'token': str(token)}
             return Response(message, status=status.HTTP_200_OK)
-        else:
-            return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UsersViewSet(viewsets.ModelViewSet):
@@ -121,8 +114,10 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = (IsAuthorAdminModeratorOrReadOnly,
-                          permissions.IsAuthenticatedOrReadOnly)
+    permission_classes = (
+        IsAuthorAdminModeratorOrReadOnly,
+        permissions.IsAuthenticatedOrReadOnly
+    )
     title_id_kwarg = 'title_id'
     http_method_names = ('get', 'post', 'patch', 'delete')
 
@@ -141,8 +136,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentsViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = (IsAuthorAdminModeratorOrReadOnly,
-                          permissions.IsAuthenticatedOrReadOnly)
+    permission_classes = (
+        IsAuthorAdminModeratorOrReadOnly,
+        permissions.IsAuthenticatedOrReadOnly
+    )
     review_id_kwarg = 'review_id'
     http_method_names = ('get', 'post', 'patch', 'delete')
 
