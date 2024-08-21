@@ -42,16 +42,11 @@ class UserSignUpSerializer(serializers.ModelSerializer):
         if User.objects.filter(email=email,
                                username=username).exists():
             return data
-        elif (User.objects.filter(email=email).exists()
-              and User.objects.filter(username=username).exists()):
-            raise serializers.ValidationError(
-                {'email': 'Email already registered',
-                 'username': 'Username already taken'})
-        elif User.objects.filter(email=email).exists():
+        if User.objects.filter(email=email).exists():
             raise serializers.ValidationError(
                 {'email': 'Email already registered'}
             )
-        elif User.objects.filter(username=username).exists():
+        if User.objects.filter(username=username).exists():
             raise serializers.ValidationError(
                 {'username': 'Username already taken'}
             )
@@ -60,7 +55,7 @@ class UserSignUpSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         email = validated_data.get('email')
         username = validated_data.get('username')
-        user, created = User.objects.get_or_create(
+        user, _ = User.objects.get_or_create(
             email=email,
             username=username
         )
