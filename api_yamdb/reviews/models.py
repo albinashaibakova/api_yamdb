@@ -1,9 +1,10 @@
+from django.contrib.auth.models import AbstractUser
 from django.core.validators import (
     MaxValueValidator,
     MinValueValidator
 )
-from django.contrib.auth.models import AbstractUser
 from django.db import models
+
 from api.validators import validator_for_username
 from reviews.constants import (EMAIL_FIELD_MAX_LENGTH,
                                MAX_STR_VALUE_LENGTH, MAX_VALUE_SCORE,
@@ -30,8 +31,7 @@ class YamdbUser(AbstractUser):
     )
     email = models.EmailField(
         max_length=EMAIL_FIELD_MAX_LENGTH,
-        unique=True,
-        blank=False
+        unique=True
     )
     bio = models.TextField(blank=True,
                            verbose_name='Bio')
@@ -54,7 +54,8 @@ class YamdbUser(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.role == self.ADMIN
+        return (self.role == self.ADMIN
+                or self.is_superuser)
 
 
 class BaseGenreCategory(models.Model):
@@ -73,13 +74,13 @@ class BaseGenreCategory(models.Model):
 
 
 class Genre(BaseGenreCategory):
-    class Meta:
+    class Meta(BaseGenreCategory.Meta):
         verbose_name = 'Жанр'
         verbose_name_plural = 'жанры'
 
 
 class Category(BaseGenreCategory):
-    class Meta:
+    class Meta(BaseGenreCategory.Meta):
         verbose_name = 'Категория'
         verbose_name_plural = 'категории'
 
@@ -118,10 +119,6 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name[:MAX_STR_VALUE_LENGTH]
-
-    def display_genre(self):
-        return ', '.join([genre.name for genre in self.genre.all()[:3]])
-    display_genre.short_description = 'Genre'
 
 
 class GenreTitle(models.Model):
@@ -176,8 +173,7 @@ class Review(BaseCommentReview):
     title = models.ForeignKey(
         Title,
         verbose_name='Произведение',
-        on_delete=models.CASCADE,
-        related_name='reviews'
+        on_delete=models.CASCADE
     )
     score = models.IntegerField(
         verbose_name='Оценка',
@@ -193,7 +189,7 @@ class Review(BaseCommentReview):
         )
     )
 
-    class Meta:
+    class Meta(BaseCommentReview.Meta):
         verbose_name = 'отзыв'
         verbose_name_plural = 'Отзывы'
         default_related_name = 'reviews'
@@ -210,11 +206,10 @@ class Comment(BaseCommentReview):
     review = models.ForeignKey(
         Review,
         verbose_name='Отзыв',
-        on_delete=models.CASCADE,
-        related_name='comments'
+        on_delete=models.CASCADE
     )
 
-    class Meta:
+    class Meta(BaseCommentReview.Meta):
         verbose_name = 'комментарий'
         verbose_name_plural = 'Комментарии'
         default_related_name = 'comments'

@@ -10,8 +10,8 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.views import APIView
 
+from api.base_viewsets import ListCreateDestroyViewSet
 from api.filters import TitleFilter
-from api.mixins import ListCreateDestroyViewSet
 from api.permissions import (IsAdminOrReadOnly,
                              IsAdminOrSuperuser,
                              IsAuthorAdminModeratorOrReadOnly)
@@ -33,8 +33,7 @@ class UserSignUpView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = UserSignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        user = User.objects.get(username=serializer.validated_data['username'])
+        user = serializer.save()
         confirmation_code = default_token_generator.make_token(user)
         send_confirmation_email(email=user.email,
                                 confirmation_code=confirmation_code)
