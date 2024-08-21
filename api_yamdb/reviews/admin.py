@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 
-from reviews.models import (Category, Comment,
+from reviews.models import (Category, Comment, Genre,
                             GenreTitle, Review, Title)
 
 
@@ -18,6 +18,12 @@ class YamdbUserAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug')
+    search_fields = ('name',)
+
+
+@admin.register(Genre)
+class GenreAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
     search_fields = ('name',)
 
