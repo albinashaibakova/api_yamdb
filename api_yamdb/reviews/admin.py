@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 
 from reviews.models import (Category, Comment, Genre,
-                            Review, Title)
+                            GenreTitle, Review, Title)
 
 
 User = get_user_model()
@@ -35,6 +35,21 @@ class TitleAdmin(admin.ModelAdmin):
     list_filter = ('category', 'year')
     list_editable = ('category',)
 
+    @admin.display(
+        description='Genre',
+    )
+    def display_genre(self, title):
+        return ', '.join([genre.name for genre in title.genre.all()[:3]])
+
+@admin.register(GenreTitle)
+class GenreTitleAdmin(admin.ModelAdmin):
+    list_display = (
+        'genre_id',
+        'title_id'
+    )
+    list_filter = ('genre_id',)
+    search_fields = ('title_id',)
+
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
@@ -46,5 +61,5 @@ class ReviewAdmin(admin.ModelAdmin):
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('author', 'review', 'pub_date')
-    search_fields = ('author_review',)
+    search_fields = ('author',)
     list_filter = ('pub_date',)
