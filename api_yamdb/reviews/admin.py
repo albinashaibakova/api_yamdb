@@ -41,6 +41,7 @@ class TitleAdmin(admin.ModelAdmin):
     def display_genre(self, title):
         return ', '.join([genre.name for genre in title.genre.all()[:3]])
 
+
 @admin.register(GenreTitle)
 class GenreTitleAdmin(admin.ModelAdmin):
     list_display = (
