@@ -9,7 +9,7 @@ def validator_for_username(username):
     if username == USER_PROFILE_PATH:
         raise ValidationError(f'Cannot use username {USER_PROFILE_PATH}')
 
-    elif not re.search(INVALID_CHAR, username):
+    if not re.search(INVALID_CHAR, username):
         raise ValidationError('Invalid username')
 
     return username
