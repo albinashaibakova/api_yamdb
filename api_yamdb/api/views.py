@@ -10,7 +10,6 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.views import APIView
 
-from api.base_viewsets import ListCreateDestroyViewSet
 from api.filters import TitleFilter
 from api.permissions import (IsAdminOrReadOnly,
                              IsAdminOrSuperuser,
@@ -21,6 +20,7 @@ from api.serializers import (CategorySerializer, CommentSerializer,
                              UserGetTokenSerializer, UserSerializer,
                              UserSignUpSerializer)
 from api.utils import send_confirmation_email
+from api.viewsets import ListCreateDestroyViewSet
 from reviews.constants import USER_PROFILE_PATH
 from reviews.models import Category, Genre, Review, Title
 
